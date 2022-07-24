@@ -1,0 +1,61 @@
+{
+  "baseUrl": ".",
+  "include": ["src/**/*", "tests/**/*"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "esnext",
+    "module": "es2015",
+    "paths": {
+      "@/*": ["./*"],
+      "@": [
+        "./index.js",
+        "./index.json",
+        "./index.vue",
+        "./index.scss",
+        "./index.css",
+        "./index.ts",
+        "./index.tsx"
+      ],
+      "@src/*": ["src/*"],
+      "@src": [
+        "src/index.js",
+        "src/index.json",
+        "src/index.vue",
+        "src/index.scss",
+        "src/index.css",
+        "src/index.ts",
+        "src/index.tsx"
+      ],
+      "@libs/*": ["src/libs/*"],
+      "@libs": [
+        "src/libs/index.js",
+        "src/libs/index.json",
+        "src/libs/index.vue",
+        "src/libs/index.scss",
+        "src/libs/index.css",
+        "src/libs/index.ts",
+        "src/libs/index.tsx"
+      ],
+      "@assets/*": ["src/assets/*"],
+      "@assets": [
+        "src/assets/index.js",
+        "src/assets/index.json",
+        "src/assets/index.vue",
+        "src/assets/index.scss",
+        "src/assets/index.css",
+        "src/assets/index.ts",
+        "src/assets/index.tsx"
+      ],
+      "@utils/*": ["src/utils/*"],
+      "@utils": [
+        "src/utils/index.js",
+        "src/utils/index.json",
+        "src/utils/index.vue",
+        "src/utils/index.scss",
+        "src/utils/index.css",
+        "src/utils/index.ts",
+        "src/utils/index.tsx"
+      ]
+    }
+  }
+}

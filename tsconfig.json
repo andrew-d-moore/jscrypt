@@ -1,0 +1,21 @@
+{
+  "baseUrl": ".",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist/",
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "module": "commonjs",
+    "target": "es2016",
+    "lib": [ "es6" ],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node"
+  },
+  "include": [ "src/**/*" ],
+  "exclude": [ "node_modules", "tests" ]
+}
