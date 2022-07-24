@@ -1,0 +1,2 @@
+# jscrypt
+Node Crypto wrapper
