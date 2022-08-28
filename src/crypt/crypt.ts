@@ -2,7 +2,7 @@ import crypto, { BinaryToTextEncoding } from 'crypto'
 
 /**
  * configHMAC Interface
- *
+ * @example
  * {
  *  'string': string,
  *  'algorithm'?: string,
@@ -19,7 +19,7 @@ interface configHMAC {
 
 /**
  * configPbkdf2Sync Interface
- *
+ * @example
  * {
  *  'string': string,
  *  'algorithm'?: string,
@@ -55,6 +55,17 @@ export default class Crypt {
    * @returns {string} uuid string.
    */
   public static generateUUID(): string { return crypto.randomUUID({ disableEntropyCache: true })}
+
+  /**
+   * Check UUID is valid
+   * @param {string} id UUID string
+   * @returns {boolean} True if string is valid UUID
+   */
+  public static isValidUUID(id: string): boolean {
+    let regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    if (regex.test(id)) return true
+    else return false
+  }
 
   /**
    * Generate a salt string

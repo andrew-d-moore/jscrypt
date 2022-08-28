@@ -18,6 +18,18 @@ class Crypt {
      */
     static generateUUID() { return crypto_1.default.randomUUID({ disableEntropyCache: true }); }
     /**
+     * Check UUID is valid
+     * @param {string} id UUID string
+     * @returns {boolean} True if string is valid UUID
+     */
+    static isValidUUID(id) {
+        let regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (regex.test(id))
+            return true;
+        else
+            return false;
+    }
+    /**
      * Generate a salt string
      *
      * @param {number} bytes Number of bytes to use

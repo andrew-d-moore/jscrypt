@@ -3,7 +3,7 @@
 import { BinaryToTextEncoding } from 'crypto';
 /**
  * configHMAC Interface
- *
+ * @example
  * {
  *  'string': string,
  *  'algorithm'?: string,
@@ -19,7 +19,7 @@ interface configHMAC {
 }
 /**
  * configPbkdf2Sync Interface
- *
+ * @example
  * {
  *  'string': string,
  *  'algorithm'?: string,
@@ -54,6 +54,12 @@ export default class Crypt {
      * @returns {string} uuid string.
      */
     static generateUUID(): string;
+    /**
+     * Check UUID is valid
+     * @param {string} id UUID string
+     * @returns {boolean} True if string is valid UUID
+     */
+    static isValidUUID(id: string): boolean;
     /**
      * Generate a salt string
      *
