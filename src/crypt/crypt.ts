@@ -85,20 +85,14 @@ export default class Crypt {
    */
   public static generateHMAC(config: configHMAC): string {
     let algorithm: string, encoding: BinaryToTextEncoding, secret: string
-    if (config.algorithm)
-      algorithm = config.algorithm
-    else
-      algorithm = 'sha256'
+    if (config.algorithm) algorithm = config.algorithm
+    else algorithm = 'sha256'
 
-    if (config.encoding)
-      encoding = config.encoding
-    else
-      encoding = 'base64url'
+    if (config.encoding) encoding = config.encoding
+    else encoding = 'base64url'
 
-    if (config.secret)
-      secret = config.secret
-    else
-      secret = 'secret'
+    if (config.secret) secret = config.secret
+    else secret = 'secret'
 
     const hmac = crypto.createHmac(algorithm, secret)
     const data = hmac.update(config.string)
