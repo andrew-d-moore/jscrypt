@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,9 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = __importDefault(require("crypto"));
 /**
  * Encryption library
- *
- * @author Andrew Moore <amoore@mutesol.com>
- * @version 0.1.0
  */
 class Crypt {
     /**
@@ -36,7 +42,9 @@ class Crypt {
      * in salt, default 32.
      * @returns {string} Salt string.
      */
-    static generateSalt(bytes = 32) { return crypto_1.default.randomBytes(bytes).toString('base64url'); }
+    static generateSalt(bytes = 32) {
+        return crypto_1.default.randomBytes(bytes).toString('base64url');
+    }
     /**
      * Generate an HMAC string hash
      *
@@ -86,9 +94,7 @@ exports.default = Crypt;
 /**
  * String Hashing object - String to Integer
  * Determinisitic
- *
- * @author Andrew Moore <amoore@mutesol.com>
- * @version 1.0.0
+ * @class
  */
 Crypt.hashStringToInt = class {
     /**
@@ -122,9 +128,7 @@ Crypt.hashStringToInt = class {
  * String Hashing object - String to hashed string
  * of designated length.
  * Semi-Determinisitic
- *
- * @author Andrew Moore <amoore@mutesol.com>
- * @version 1.0.0
+ * @class
  */
 Crypt.hashStringPbkdf2Sync = class {
     /**
@@ -202,6 +206,82 @@ Crypt.hashStringPbkdf2Sync = class {
             else
                 return 'hex';
         })());
+    }
+};
+/**
+ * Generate shared keys
+ * @class
+ */
+Crypt.diffieHellman = class {
+    /**
+     * @constructor
+     * @param {configDiffieHellman} config
+     */
+    constructor(config) {
+        this.encoding = `base64`;
+        this.textEncoding = `base64`;
+        this.outputEncoding = `hex`;
+        if (config.encoding)
+            this.encoding = config.encoding;
+        if (config.textEncoding)
+            this.textEncoding = config.textEncoding;
+        if (config.outputEncoding)
+            this.outputEncoding = config.outputEncoding;
+        this._userA = crypto_1.default.createECDH(`secp256k1`);
+        this._userB = crypto_1.default.createECDH(`secp256k1`);
+        this.init();
+    }
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.generateKeys();
+            yield this.generatePublicKeys();
+            yield this.generateSharedKeys();
+            if (this.verifyKeys) {
+                return {
+                    KeysA: {
+                        public: this._userAPublicKey,
+                        private: this._userASharedKey
+                    },
+                    KeysB: {
+                        public: this._userBPublicKey,
+                        private: this._userBSharedKey
+                    }
+                };
+            }
+            else
+                throw new Error(`Error generating keys`);
+        });
+    }
+    /**
+     * @private
+     * @async
+     * @returns {Promise<void>}
+     */
+    generateKeys() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._userA.generateKeys();
+            this._userB.generateKeys();
+        });
+    }
+    /**
+     * @private
+     * @async
+     * @returns {Promise<void>}
+     */
+    generatePublicKeys() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._userAPublicKey = this._userA.getPublicKey().toString(this.encoding);
+            this._userBPublicKey = this._userB.getPublicKey().toString(this.encoding);
+        });
+    }
+    generateSharedKeys() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._userASharedKey = this._userA.computeSecret(this._userBPublicKey, this.textEncoding, this.outputEncoding);
+            this._userBSharedKey = this._userB.computeSecret(this._userAPublicKey, this.textEncoding, this.outputEncoding);
+        });
+    }
+    verifyKeys() {
+        return (this._userASharedKey === this._userBSharedKey);
     }
 };
 //# sourceMappingURL=crypt.js.map

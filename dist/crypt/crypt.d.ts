@@ -42,10 +42,24 @@ interface configPbkdf2Sync {
     randomBytes?: number;
 }
 /**
+ * @export
+ * @interface configDiffieHellman
+ * @typedef {configDiffieHellman}
+ * @example
+ * {
+ *  encoding?: BufferEncoding,
+ *  textEncoding?: BinaryToTextEncoding
+ *  outputEncoding?: BinaryToTextEncoding
+ * }
+ */
+interface configDiffieHellman {
+    encoding?: BufferEncoding;
+    textEncoding?: BinaryToTextEncoding;
+    outputEncoding?: BinaryToTextEncoding;
+}
+export { configHMAC, configPbkdf2Sync, configDiffieHellman };
+/**
  * Encryption library
- *
- * @author Andrew Moore <amoore@mutesol.com>
- * @version 0.1.0
  */
 export default class Crypt {
     /**
@@ -93,19 +107,19 @@ export default class Crypt {
     /**
      * String Hashing object - String to Integer
      * Determinisitic
-     *
-     * @author Andrew Moore <amoore@mutesol.com>
-     * @version 1.0.0
+     * @class
      */
     static hashStringToInt: any;
     /**
      * String Hashing object - String to hashed string
      * of designated length.
      * Semi-Determinisitic
-     *
-     * @author Andrew Moore <amoore@mutesol.com>
-     * @version 1.0.0
+     * @class
      */
     static hashStringPbkdf2Sync: any;
+    /**
+     * Generate shared keys
+     * @class
+     */
+    static diffieHellman: any;
 }
-export { configHMAC, configPbkdf2Sync };
