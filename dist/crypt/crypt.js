@@ -229,7 +229,6 @@ Crypt.diffieHellman = class {
             this.outputEncoding = config.outputEncoding;
         this._userA = crypto_1.default.createECDH(`secp256k1`);
         this._userB = crypto_1.default.createECDH(`secp256k1`);
-        this.init();
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {

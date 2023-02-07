@@ -287,13 +287,12 @@ export default class Crypt {
      * @constructor
      * @param {configDiffieHellman} config
      */
-    constructor(config: configDiffieHellman) {
+    constructor(config?: configDiffieHellman) {
       if (config.encoding) this.encoding = config.encoding
       if (config.textEncoding) this.textEncoding = config.textEncoding
       if (config.outputEncoding) this.outputEncoding = config.outputEncoding
       this._userA = crypto.createECDH(`secp256k1`)
       this._userB = crypto.createECDH(`secp256k1`)
-      this.init()
     }
 
     async init(): Promise<any> {
