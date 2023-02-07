@@ -217,7 +217,7 @@ Crypt.diffieHellman = class {
      * @constructor
      * @param {configDiffieHellman} config
      */
-    constructor(config) {
+    constructor(config = {}) {
         this.encoding = `base64`;
         this.textEncoding = `base64`;
         this.outputEncoding = `hex`;
