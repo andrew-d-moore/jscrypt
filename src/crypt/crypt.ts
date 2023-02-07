@@ -43,10 +43,26 @@ interface configPbkdf2Sync {
 }
 
 /**
+ * @export
+ * @interface configDiffieHellman
+ * @typedef {configDiffieHellman}
+ * @example
+ * {
+ *  encoding?: BufferEncoding,
+ *  textEncoding?: BinaryToTextEncoding
+ *  outputEncoding?: BinaryToTextEncoding
+ * }
+ */
+interface configDiffieHellman {
+  encoding?: BufferEncoding,
+  textEncoding?: BinaryToTextEncoding,
+  outputEncoding?: BinaryToTextEncoding,
+}
+
+export { configHMAC, configPbkdf2Sync, configDiffieHellman }
+
+/**
  * Encryption library
- *
- * @author Andrew Moore <amoore@mutesol.com>
- * @version 0.1.0
  */
 export default class Crypt {
   /**
@@ -74,7 +90,9 @@ export default class Crypt {
    * in salt, default 32.
    * @returns {string} Salt string.
    */
-  public static generateSalt(bytes: number = 32): string { return crypto.randomBytes(bytes).toString('base64url') }
+  public static generateSalt(bytes: number = 32): string {
+    return crypto.randomBytes(bytes).toString('base64url')
+  }
 
   /**
    * Generate an HMAC string hash
@@ -123,9 +141,7 @@ export default class Crypt {
   /**
    * String Hashing object - String to Integer
    * Determinisitic
-   *
-   * @author Andrew Moore <amoore@mutesol.com>
-   * @version 1.0.0
+   * @class
    */
   public static hashStringToInt: any = class {
     _hash: number = 0
@@ -165,9 +181,7 @@ export default class Crypt {
    * String Hashing object - String to hashed string
    * of designated length.
    * Semi-Determinisitic
-   *
-   * @author Andrew Moore <amoore@mutesol.com>
-   * @version 1.0.0
+   * @class
    */
   public static hashStringPbkdf2Sync: any = class {
     _hash: string
@@ -254,6 +268,87 @@ export default class Crypt {
       )
     }
   }
-}
 
-export { configHMAC, configPbkdf2Sync }
+  /**
+   * Generate shared keys
+   * @class
+   */
+  public static diffieHellman: any = class {
+    encoding: BufferEncoding = `base64`
+    textEncoding: BinaryToTextEncoding = `base64`
+    outputEncoding: BinaryToTextEncoding = `hex`
+    _userA: crypto.ECDH
+    _userAPublicKey: string
+    _userASharedKey: string
+    _userB: crypto.ECDH
+    _userBPublicKey: string
+    _userBSharedKey: string
+    /**
+     * @constructor
+     * @param {configDiffieHellman} config
+     */
+    constructor(config: configDiffieHellman) {
+      if (config.encoding) this.encoding = config.encoding
+      if (config.textEncoding) this.textEncoding = config.textEncoding
+      if (config.outputEncoding) this.outputEncoding = config.outputEncoding
+      this._userA = crypto.createECDH(`secp256k1`)
+      this._userB = crypto.createECDH(`secp256k1`)
+      this.init()
+    }
+
+    async init(): Promise<any> {
+      await this.generateKeys()
+      await this.generatePublicKeys()
+      await this.generateSharedKeys()
+      if (this.verifyKeys) {
+        return {
+          KeysA: {
+            public: this._userAPublicKey,
+            private: this._userASharedKey
+          },
+          KeysB: {
+            public: this._userBPublicKey,
+            private: this._userBSharedKey
+          }
+        }
+      } else throw new Error(`Error generating keys`)
+    }
+
+    /**
+     * @private
+     * @async
+     * @returns {Promise<void>}
+     */
+    private async generateKeys(): Promise<void> {
+      this._userA.generateKeys()
+      this._userB.generateKeys()
+    }
+
+    /**
+     * @private
+     * @async
+     * @returns {Promise<void>}
+     */
+    private async generatePublicKeys(): Promise<void> {
+      this._userAPublicKey = this._userA.getPublicKey().toString(this.encoding)
+      this._userBPublicKey = this._userB.getPublicKey().toString(this.encoding)
+    }
+
+    private async generateSharedKeys(): Promise<void> {
+      this._userASharedKey = this._userA.computeSecret(
+        this._userBPublicKey,
+        this.textEncoding,
+        this.outputEncoding
+      )
+      this._userBSharedKey = this._userB.computeSecret(
+        this._userAPublicKey,
+        this.textEncoding,
+        this.outputEncoding
+      )
+    }
+
+    private verifyKeys(): boolean {
+      return (this._userASharedKey === this._userBSharedKey)
+    }
+  }
+}
