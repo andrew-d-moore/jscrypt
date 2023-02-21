@@ -183,7 +183,7 @@ export default class Crypt {
    * Semi-Determinisitic
    * @class
    */
-  public hashStringPbkdf2Sync: any = class {
+  public static hashStringPbkdf2Sync: any = class {
     _hash: string
     _salt: string
     _string: string
@@ -273,7 +273,7 @@ export default class Crypt {
    * Generate shared keys
    * @class
    */
-  public diffieHellman: any = class {
+  public static diffieHellman: any = class {
     encoding: BufferEncoding = `base64`
     textEncoding: BinaryToTextEncoding = `base64`
     outputEncoding: BinaryToTextEncoding = `hex`
