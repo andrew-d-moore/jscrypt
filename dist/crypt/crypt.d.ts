@@ -116,10 +116,10 @@ export default class Crypt {
      * Semi-Determinisitic
      * @class
      */
-    static hashStringPbkdf2Sync: any;
+    hashStringPbkdf2Sync: any;
     /**
      * Generate shared keys
      * @class
      */
-    static diffieHellman: any;
+    diffieHellman: any;
 }
