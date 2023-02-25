@@ -8,6 +8,7 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
+    "clean": "rm -rf ./dist",
     "test": "jest",
     "test:watch": "jest --watch",
     "build": "tsc",

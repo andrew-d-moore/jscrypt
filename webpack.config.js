@@ -1,8 +1,8 @@
-const appConfig = require('./src/app.config')
+import { config } from './src/config'
 const path = require('path');
 
 module.exports = {
-  name: appConfig.title,
+  name: config.title,
   entry: './src/main.ts',
   mode: 'development',
   devtool: 'inline-source-map',
