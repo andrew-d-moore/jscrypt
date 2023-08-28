@@ -118,8 +118,57 @@ export default class Crypt {
      */
     static hashStringPbkdf2Sync: any;
     /**
-     * Generate shared keys
+     * Generate shared keys using diffieHellman
+     * PublicKeys encoded as base64
+     * SharedKey encoded as hex
      * @class
      */
     static diffieHellman: any;
+    /**
+     * @param passphrase
+     * @returns {string, string}
+     */
+    static generateRSAKeyPair(passphrase?: string): {
+        publicKey: string;
+        privateKey: string;
+    };
+    /**
+     * @param publicKey
+     * @param data
+     * @returns {Buffer}
+     */
+    static encryptDataRSA(publicKey: string, data: any): Buffer;
+    /**
+     * @param privateKey
+     * @param data
+     * @param passphrase
+     * @returns {Buffer}
+     */
+    static decryptDataRSA(privateKey: string, data: any, passphrase?: string): Buffer;
+    /**
+     * @param privateKey
+     * @param data
+     * @param passphrase
+     * @returns {Buffer}
+     */
+    static signDataRSA(privateKey: string, data: any, passphrase?: string): Buffer;
+    /**
+     * @param publicKey
+     * @param data
+     * @param signature
+     * @returns {Boolean}
+     */
+    static verifySignatureRSA(publicKey: string, data: any, signature: Buffer): Boolean;
+    /**
+     * @param sharedKey - hex string
+     * @param data - POD
+     * @returns {string} - base64 string
+     */
+    static encryptDataGCM(sharedKey: string, data: any): string;
+    /**
+     * @param sharedKey - hex string
+     * @param cipher - base64 string
+     * @returns {string}
+     */
+    static decryptDataGCM(sharedKey: string, cipher: string): string;
 }

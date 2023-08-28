@@ -89,6 +89,143 @@ class Crypt {
     static base64url_decode(string) {
         return Buffer.from(string, 'base64url').toString('ascii');
     }
+    /**
+     * @param passphrase
+     * @returns {string, string}
+     */
+    static generateRSAKeyPair(passphrase) {
+        // The `generateKeyPairSync` method accepts two arguments:
+        // 1. The type of keys we want, which in this case is "rsa"
+        // 2. An object with the properties of the key
+        const { publicKey, privateKey } = crypto_1.default.generateKeyPairSync(`rsa`, {
+            // The standard secure default length for RSA keys is 2048 bits
+            modulusLength: 4096,
+            publicKeyEncoding: {
+                type: `spki`,
+                format: `pem`
+            },
+            privateKeyEncoding: {
+                type: `pkcs8`,
+                format: `pem`,
+                cipher: `aes-256-cbc`,
+                passphrase: (() => { if (passphrase)
+                    return passphrase;
+                else
+                    return `top secret`; })()
+            }
+        });
+        return {
+            publicKey,
+            privateKey
+        };
+    }
+    /**
+     * @param publicKey
+     * @param data
+     * @returns {Buffer}
+     */
+    static encryptDataRSA(publicKey, data) {
+        return crypto_1.default.publicEncrypt({
+            key: publicKey,
+            padding: crypto_1.default.constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: "sha256"
+        }, Buffer.from(data));
+    }
+    /**
+     * @param privateKey
+     * @param data
+     * @param passphrase
+     * @returns {Buffer}
+     */
+    static decryptDataRSA(privateKey, data, passphrase) {
+        const encryptedKey = crypto_1.default.createPrivateKey({
+            key: privateKey,
+            passphrase: (() => { if (passphrase)
+                return passphrase;
+            else
+                return `top secret`; })()
+        });
+        return crypto_1.default.privateDecrypt({
+            key: encryptedKey,
+            // In order to decrypt the data, we need to specify the
+            // same hashing function and padding scheme that we used to
+            // encrypt the data in the previous step
+            padding: crypto_1.default.constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: "sha256"
+        }, data);
+    }
+    /**
+     * @param privateKey
+     * @param data
+     * @param passphrase
+     * @returns {Buffer}
+     */
+    static signDataRSA(privateKey, data, passphrase) {
+        const encryptedKey = crypto_1.default.createPrivateKey({
+            key: privateKey,
+            passphrase: (() => { if (passphrase)
+                return passphrase;
+            else
+                return `top secret`; })()
+        });
+        // The signature method takes the data we want to sign, the
+        // hashing algorithm, and the padding scheme, and generates
+        // a signature in the form of bytes
+        return crypto_1.default.sign("sha256", Buffer.from(data), {
+            key: encryptedKey,
+            padding: crypto_1.default.constants.RSA_PKCS1_PSS_PADDING,
+        });
+    }
+    /**
+     * @param publicKey
+     * @param data
+     * @param signature
+     * @returns {Boolean}
+     */
+    static verifySignatureRSA(publicKey, data, signature) {
+        // To verify the data, we provide the same hashing algorithm and
+        // padding scheme we provided to generate the signature, along
+        // with the signature itself, the data that we want to
+        // verify against the signature, and the public key
+        return crypto_1.default.verify("sha256", Buffer.from(data), {
+            key: publicKey,
+            padding: crypto_1.default.constants.RSA_PKCS1_PSS_PADDING,
+        }, signature);
+    }
+    /**
+     * @param sharedKey - hex string
+     * @param data - POD
+     * @returns {string} - base64 string
+     */
+    static encryptDataGCM(sharedKey, data) {
+        const IV = crypto_1.default.randomBytes(16);
+        const cipher = crypto_1.default.createCipheriv('aes-256-gcm', Buffer.from(sharedKey, 'hex'), IV);
+        let encrypted = cipher.update(data, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        const auth_tag = cipher.getAuthTag().toString('hex');
+        const payload = IV.toString('hex') + encrypted + auth_tag;
+        return Buffer.from(payload, 'hex').toString('base64');
+    }
+    /**
+     * @param sharedKey - hex string
+     * @param cipher - base64 string
+     * @returns {string}
+     */
+    static decryptDataGCM(sharedKey, cipher) {
+        const payload = Buffer.from(cipher, 'base64').toString('hex');
+        const IV = payload.substring(0, 32);
+        const encrypted = payload.substring(32, payload.length - 32);
+        const auth_tag = payload.substring(payload.length - 32, payload.length);
+        try {
+            const decipher = crypto_1.default.createDecipheriv('aes-256-gcm', Buffer.from(sharedKey, 'hex'), Buffer.from(IV, 'hex'));
+            decipher.setAuthTag(Buffer.from(auth_tag, 'hex'));
+            let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+            return decrypted += decipher.final('utf8');
+        }
+        catch (err) {
+            return err;
+        }
+    }
 }
 exports.default = Crypt;
 /**
@@ -209,7 +346,9 @@ Crypt.hashStringPbkdf2Sync = class {
     }
 };
 /**
- * Generate shared keys
+ * Generate shared keys using diffieHellman
+ * PublicKeys encoded as base64
+ * SharedKey encoded as hex
  * @class
  */
 Crypt.diffieHellman = class {
@@ -217,16 +356,15 @@ Crypt.diffieHellman = class {
      * @constructor
      * @param {configDiffieHellman} config
      */
-    constructor(config = {}) {
+    constructor(config) {
         this.encoding = `base64`;
         this.textEncoding = `base64`;
         this.outputEncoding = `hex`;
-        if (config.encoding)
+        if (config) {
             this.encoding = config.encoding;
-        if (config.textEncoding)
             this.textEncoding = config.textEncoding;
-        if (config.outputEncoding)
             this.outputEncoding = config.outputEncoding;
+        }
         this._userA = crypto_1.default.createECDH(`secp256k1`);
         this._userB = crypto_1.default.createECDH(`secp256k1`);
     }
@@ -252,7 +390,6 @@ Crypt.diffieHellman = class {
         });
     }
     /**
-     * @private
      * @async
      * @returns {Promise<void>}
      */
@@ -263,7 +400,6 @@ Crypt.diffieHellman = class {
         });
     }
     /**
-     * @private
      * @async
      * @returns {Promise<void>}
      */

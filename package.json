@@ -1,6 +1,6 @@
 {
   "name": "jscrypt",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "@Mutable Solutions, LLC",
   "description": "Crypto wrapper",
   "author": "Mutable Solutions, LLC",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
-    "@types/jest": "^28.1.5",
+    "@types/jest": "^28.1.8",
     "@types/node": "^18.0.3",
     "dgram": "^1.0.1",
     "jadt": "github:andrew-d-moore/jadt",
