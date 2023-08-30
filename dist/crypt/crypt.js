@@ -18,7 +18,7 @@ const crypto_1 = __importDefault(require("crypto"));
  */
 class Crypt {
     /**
-     * Generate a uuid string
+     * Generate a valid uuid string
      *
      * @returns {string} uuid string.
      */
@@ -36,7 +36,7 @@ class Crypt {
             return false;
     }
     /**
-     * Generate a salt string
+     * Generate a salt string - default 32 bytes
      *
      * @param {number} bytes Number of bytes to use
      * in salt, default 32.
