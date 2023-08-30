@@ -66,7 +66,7 @@ export { configHMAC, configPbkdf2Sync, configDiffieHellman }
  */
 export default class Crypt {
   /**
-   * Generate a uuid string
+   * Generate a valid uuid string
    *
    * @returns {string} uuid string.
    */
@@ -84,7 +84,7 @@ export default class Crypt {
   }
 
   /**
-   * Generate a salt string
+   * Generate a salt string - default 32 bytes
    *
    * @param {number} bytes Number of bytes to use
    * in salt, default 32.
