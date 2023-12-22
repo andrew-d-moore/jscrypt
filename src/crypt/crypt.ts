@@ -298,7 +298,7 @@ export default class Crypt {
       this._userA = crypto.createECDH(`secp256k1`)
       this._userB = crypto.createECDH(`secp256k1`)
     }
-    
+
     async init(): Promise<any> {
       await this.generateKeys()
       await this.generatePublicKeys()
