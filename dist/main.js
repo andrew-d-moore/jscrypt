@@ -37,5 +37,5 @@ console.log(verified)*/
     console.log('Base64 Crypt:', crypt)
     const decrypt = Crypt.decryptDataGCM(result.KeysB.private, crypt)
     console.log(decrypt)
-})()*/
+})()*/ 
 //# sourceMappingURL=main.js.map
